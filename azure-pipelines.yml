@@ -1,0 +1,23 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - task: AzureCLI@2
+    inputs:
+      azureSubscription: '<your-service-connection>'
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        az vm run-command invoke --command-id RunPowerShellScript --name 'YourWinVM' --resource-group 'YourResourceGroup' --scripts "Start-DefenderScan.ps1"
+  - task: PublishPipelineArtifact@1
+    inputs:
+      artifactName: 'ScanReports'
+      targetPath: '$(System.DefaultWorkingDirectory)/reports'
